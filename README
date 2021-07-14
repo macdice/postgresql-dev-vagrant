@@ -2,6 +2,8 @@ Some basic tools to help spin up virtual machines ready for porting work.
 
 cd openindiana
 vagrant up
+vagrant ssh
+vagrant destroy
 
 TODO:  Pull down the postgresql source tree as user vagrant.
 TODO:  Figure out how to set the git user/email?
