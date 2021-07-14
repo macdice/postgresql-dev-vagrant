@@ -1,0 +1,19 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "openindiana/hipster"
+  config.nfs.verify_installed = false
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.ssh.forward_agent = true
+
+  config.vm.provision "shell", inline: <<-SHELL
+     pkg install gcc-10 gdb flex bison autoconf ccache git vim screen
+  SHELL
+
+  config.vm.provider :libvirt do |domain|
+    domain.memory = 4096
+    domain.cpus = 4
+  end
+end
+
