@@ -1,0 +1,13 @@
+Some basic tools to help spin up virtual machines ready for porting work.
+
+cd openindiana
+vagrant up
+
+TODO:  Pull down the postgresql source tree as user vagrant.
+TODO:  Figure out how to set the git user/email?
+TODO:  Install some configure and build scripts.
+TODO:  Add a whole bunch more options (llvm, ssl, ...)
+TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
+TODO:  Add other providers (for parallels users, etc).
+TODO:  Find some more OSes.
+TODO:  Set up a full 32 bit library environment in eg Debian.
