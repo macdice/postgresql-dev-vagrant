@@ -8,9 +8,26 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.ssh.forward_agent = true
 
+  # install the packages we need and configure the crusty old sysv semaphores
+  # so that postgresql's make check doesn't fail
   config.vm.provision "shell", inline: <<-SHELL
-    pkgin -y install gmake git flex bison ccache readline
+    pkgin -y install gmake git flex bison ccache readline screen mozilla-rootcerts
+    mozilla-rootcerts install
+    echo 'kern.ipc.semmni=100' >> /etc/sysctl.conf
+    echo 'kern.ipc.semmns=256' >> /etc/sysctl.conf
+    sysctl -w kern.ipc.semmni=100
+    sysctl -w kern.ipc.semmns=256
   SHELL
+
+  # get a source tree and some scripts to start things off
+  $setup_tree = <<-SHELL
+    git clone https://github.com/postgres/postgres.git
+    cd postgres
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug CC="ccache cc"' > reconfigure.sh
+    echo 'gmake -s clean && gmake -s -j4 && gmake -s install && gmake -s check' > rebuild.sh
+    chmod +x reconfigure.sh rebuild.sh
+  SHELL
+  config.vm.provision "shell", inline: $setup_tree, privileged: false
 
   config.vm.provider :libvirt do |domain|
     domain.memory = 4096
