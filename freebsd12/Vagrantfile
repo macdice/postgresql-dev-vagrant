@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
   config.vm.provision "shell", inline: <<-SHELL
-    pkg install -y gmake ccache git flex bison readline
+    pkg install -y gmake ccache git flex bison readline p5-IPC-Run
   SHELL
 
   # things to run as vagrant use
@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
 
     # set up lazy scripts so I don't have to remember the options
     cd postgres
-    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --with-libs=/usr/local/lib --with-includes=/usr/local/include CC="ccache cc"' > reconfigure.sh
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --with-libs=/usr/local/lib --with-includes=/usr/local/include CC="ccache cc"' > reconfigure.sh
     echo 'gmake -s clean && gmake -s -j4 && gmake -s install' > rebuild.sh
     chmod +x reconfigure.sh rebuild.sh
 
