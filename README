@@ -1,8 +1,8 @@
-When I'm investigating portability problems in PostgreSQL, I would like to be
-able to spin up a virtual machine that already has a complete working
-environment (packages, any necessary sysctl changes, PostgreSQL source tree
-cloned, built and installed so I can use it straight away and the ccache
-is prewarmed).
+When I'm investigating portability problems in PostgreSQL on an OS that I don't
+usually have around, I would like to be able to spin up a virtual machine that
+already has a complete working environment (packages, any necessary sysctl
+changes, PostgreSQL source tree cloned, built and installed so I can use it
+straight away and the ccache is prewarmed).
 
 cd openindiana
 vagrant up
