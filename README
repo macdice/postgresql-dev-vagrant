@@ -1,4 +1,8 @@
-Some basic tools to help spin up virtual machines ready for porting work.
+When I'm investigating portability problems in PostgreSQL, I would like to be
+able to spin up a virtual machine that already has a complete working
+environment (packages, any necessary sysctl changes, PostgreSQL source tree
+cloned, built and installed so I can use it straight away and the ccache
+is prewarmed).
 
 cd openindiana
 vagrant up
@@ -9,7 +13,7 @@ TODO:  Install civilised stuff like .vimrc, .screenrc
 TODO:  Figure out how to set the git user/email without hardcoding it here
 TODO:  Add a whole bunch more options (llvm, ssl, ...)
 TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
-TODO:  Add other providers (for parallels users, etc).
+TODO:  Add other providers (parallels, virtualbox, ...).
 TODO:  Find some more OSes.
 TODO:  Set up a full 32 bit library environment in eg Debian.
 TODO:  Can this thing manage qemu-based emulation of ARM, POWER, RISC-V etc?
