@@ -9,17 +9,39 @@ Vagrant.configure("2") do |config|
 
   # install the packages we need
   config.vm.provision "shell", inline: <<-SHELL
-     pkg install gcc-10 gdb flex bison autoconf ccache git vim screen
+     pkg install gcc-10 gdb flex bison autoconf ccache git vim screen library/icu pkg-config openldap
+     # It seems that illumos has a fork of Sun LDAP as /usr/lib/libldap.so
+     # which doesn't have ldap_start_tls_s, but package openldap installs
+     # libldap_r.so and libldap-2.4.so, leaving in place the older libldap
+     # that postgres can't build against.  It looks like Oracle must have
+	 # added ldap_start_tls_s to libldap.so since the fork, based on build farm
+	 # animal wrasse's success.  Gah.  Alright, let's perform the necessary
+	 # butchery.  See also the include path /usr/include/openldap, to get in
+     # front of Sun's version.
+     mv /usr/lib/libldap.so /usr/lib/libdlap-ancient.so
+     ln -s libldap-2.4.so /usr/lib/libldap.so
   SHELL
 
   # things to run as vagrant user
   $setup_tree = <<-SHELL
+    # install local perl stuff we need for --enable-tap-tests to work
+    # (this stuff is apparently not available via system-wide pkg install)
+    # XXX how can we use less version-specific paths here?
+    echo 'export PATH=$PATH:/usr/perl5/5.22/bin' >> ~/.profile
+    echo 'export PERL5LIB=~/perl5/lib/perl5' >> ~/.profile
+    . ~/.profile
+    cpan -T IPC::Run
+
     # pull down the source tree
     git clone https://github.com/postgres/postgres.git
 
     # set up lazy scripts so I don't have to remember the options
     cd postgres
-    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug CC="ccache gcc"' > reconfigure.sh
+    # Notes:
+    #   --with-llvm gets some way if you install "clang90" above, but fails
+    #     with: ld: fatal: file /usr/clang/9.0/lib/libLLVM-9.so: wrong ELF
+    #           class: ELFCLASS64
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-pam --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl CC="ccache gcc" CXX="ccache clang++" CLANG="ccache clang"' > reconfigure.sh
     echo 'gmake -s clean && gmake -s -j4 && gmake -s install && gmake -s check' > rebuild.sh
     chmod +x reconfigure.sh rebuild.sh
 
