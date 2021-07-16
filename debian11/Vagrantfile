@@ -1,0 +1,53 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bullseye64"
+
+  config.nfs.verify_installed = false
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.ssh.forward_agent = true
+
+  config.vm.provision "shell", inline: <<-SHELL
+
+    # XXX make this dependent on the host architecture?
+    arch32=i386
+
+    # prepare to install 32 bit packages too
+    dpkg --add-architecture $arch32
+    apt-get update --yes
+
+    # install tools that we don't want 32 bit versions of
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes make gcc g++ git vim-nox flex bison ccache clang slapd gettext pkg-config python3 python3-distutils libipc-run-perl gcc-multilib g++-multilib
+
+    # install libraries in 64 and 32 bit variants
+    for package in libreadline-dev libz-dev liblz4-dev llvm-dev libssl-dev libperl-dev tcl8.6-dev libpython3-dev libicu-dev libldap2-dev libxml2-dev libxslt-dev libpam-dev tcl-dev ; do
+      DEBIAN_FRONTEND=noninteractive apt-get install --yes $package $package:$arch32
+    done
+  SHELL
+
+  # things to run as vagrant use
+  $setup_tree = <<-SHELL
+    # pull down the source tree
+    git clone https://github.com/postgres/postgres.git
+
+    # set up lazy scripts so I don't have to remember the options
+    cd postgres
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-pam --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-llvm --with-libs=/usr/local/lib --with-includes=/usr/local/include CC="ccache cc" CXX="ccache c++" CLANG="ccache clang" LLVM_CONFIG="llvm-config-11"' > reconfigure.sh
+    # make configure script that builds 32 bit
+    sed 's/$/ CFLAGS="-m32" LDFLAGS="-m32"/' < reconfigure.sh > reconfigure32.sh
+    echo 'make -s clean && make -s -j4 && make -s install' > rebuild.sh
+    chmod +x reconfigure.sh reconfigure32.sh rebuild.sh
+
+    # warm up ccache by building and installing (it's not a provisioning
+    # failure if this step fails, though)
+    ./reconfigure.sh && ./rebuild.sh && gmake -s check || true
+  SHELL
+  config.vm.provision "shell", inline: $setup_tree, privileged: false
+
+  config.vm.provider :libvirt do |domain|
+    domain.memory = 4096
+    domain.cpus = 4
+  end
+end
+
