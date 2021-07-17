@@ -1,19 +1,23 @@
-When I'm investigating portability problems in PostgreSQL on an OS that I don't
-usually have around, I would like to be able to spin up a virtual machine that
-already has a complete working environment (packages, any necessary sysctl
-changes, PostgreSQL source tree cloned, built and installed so I can use it
-straight away and the ccache is prewarmed).
+A lazy way to spin up virtual machines to investigate PostgreSQL portability
+problems on various OSes, with:
 
-cd openindiana
-vagrant up
-vagrant ssh
-vagrant destroy
+ * all needed packages
+ * all needed OS configuration
+ * PostgreSQL source tree cloned
+ * configured, compiled, installed, ccache is prewarmed
 
+Status:
+
+debian11:    all options, 64 bit and 32 bit
+freebsd12:   all options
+netbsd9:     all options except gssapi
+openbsd6:    all options except gssapi, llvm, nls
+openindiana: all options except gssapi, llvm
+
+TODO:  Figure out which libraries to install for gssapi...
 TODO:  Install civilised stuff like .vimrc, .screenrc
 TODO:  Figure out how to set the git user/email without hardcoding it here
 TODO:  Add a whole bunch more options (llvm, ssl, ...)
 TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
-TODO:  Add other providers (parallels, virtualbox, ...).
 TODO:  Find some more OSes.
-TODO:  Set up a full 32 bit library environment in eg Debian.
 TODO:  Can this thing manage qemu-based emulation of ARM, POWER, RISC-V etc?
