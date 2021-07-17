@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
 
   # install the packages we need and configure the crusty old sysv semaphores
   config.vm.provision "shell", inline: <<-SHELL
-    pkgin -y install gmake git flex bison ccache readline screen mozilla-rootcerts p5-IPC-Run
+    pkgin -y install gmake git flex bison ccache readline screen mozilla-rootcerts p5-IPC-Run llvm clang pkg-config icu lz4 libxslt tcl htop
     mozilla-rootcerts install
     echo 'kern.ipc.semmni=100' >> /etc/sysctl.conf
     echo 'kern.ipc.semmns=256' >> /etc/sysctl.conf
@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
 
     # set up lazy scripts so I don't have to remember the options
     cd postgres
-    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests CC="ccache cc"' > reconfigure.sh
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-pam --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-llvm --with-includes=/usr/pkg/include CC="ccache cc" CXX="ccache c++" CLANG="ccache clang" LLVM_CONFIG="llvm-config" PYTHON="python3.8" LDFLAGS="-R/usr/pkg/lib"' > reconfigure.sh
     echo 'gmake -s clean && gmake -s -j4 && gmake -s install' > rebuild.sh
     chmod +x reconfigure.sh rebuild.sh
 
