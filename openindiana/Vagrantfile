@@ -9,17 +9,18 @@ Vagrant.configure("2") do |config|
 
   # install the packages we need
   config.vm.provision "shell", inline: <<-SHELL
-     pkg install gcc-10 gdb flex bison autoconf ccache git vim screen library/icu pkg-config openldap
-     # It seems that illumos has a fork of Sun LDAP as /usr/lib/libldap.so
-     # which doesn't have ldap_start_tls_s, but package openldap installs
-     # libldap_r.so and libldap-2.4.so, leaving in place the older libldap.so
-     # that postgres can't build against.  It looks like Oracle must have
-	 # added ldap_start_tls_s to libldap.so since the fork, based on build farm
-	 # animal wrasse's success.  Gah.  Alright, let's perform the necessary
-	 # butchery.  See also the include path /usr/include/openldap, to get in
-     # front of Sun's version.
-     mv /usr/lib/libldap.so /usr/lib/libdlap-ancient.so
-     ln -s libldap-2.4.so /usr/lib/libldap.so
+    pkg install gcc-10 gdb flex bison autoconf ccache git vim screen library/icu pkg-config openldap
+    # Sun's old LDAP library at /usr/lib/libldap.so doesn't have
+    # ldap_start_tls_s, but package openldap installs libldap_r.so and
+    # libldap-2.4.so, leaving in place the older libldap.so that postgres
+    # can't build against.  Sadly, our configure script doesn't provide a way
+    # to tell it to use -lldap-2.4, so...  adjust the libldap.so symlink.
+    # This is a bit grotty.  (Build farm animal wrasse avoids the problem by
+    # having a hand-compiled libldap that is in the library search patch
+    # before the system library path, but I'm trying to use the packages
+    # here...)
+    ln -s libldap-2.4.so /usr/lib/libldap.so
+    ln -s libldap-2.4.so /usr/lib/amd64/libldap.so
   SHELL
 
   # things to run as vagrant user
@@ -27,8 +28,12 @@ Vagrant.configure("2") do |config|
     # install local perl stuff we need for --enable-tap-tests to work
     # (this stuff is apparently not available via system-wide pkg install)
     # XXX how can we use less version-specific paths here?
-    echo 'export PATH=$PATH:/usr/perl5/5.22/bin' >> ~/.profile
+    # XXX it seems ugly to be exposing libperl.so with LD_LIBRARY_PATH,
+    # perhaps there is a package that would put it somewhere more cromulent
+    # (Again, build farm animal wrasse has its own hand-built perl...)
+    echo 'export PATH=$PATH:/usr/perl5/5.24/bin' >> ~/.profile
     echo 'export PERL5LIB=~/perl5/lib/perl5' >> ~/.profile
+    echo 'export LD_LIBRARY_PATH=/usr/perl5/5.24/lib/i86pc-solaris-thread-multi-64/CORE' >> ~/.profile
     . ~/.profile
     cpan -T IPC::Run
 
