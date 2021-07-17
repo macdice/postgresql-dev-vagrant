@@ -10,7 +10,7 @@ Status:
 
 debian11:    all options, 64 bit and 32 bit
 freebsd12:   all options
-netbsd9:     all options except gssapi
+netbsd9:     all options
 openbsd6:    all options except gssapi, llvm, nls
 openindiana: all options except gssapi, llvm
 
