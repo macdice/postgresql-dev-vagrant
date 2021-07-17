@@ -1,18 +1,21 @@
 A lazy way to spin up virtual machines to investigate PostgreSQL portability
-problems on various OSes, with:
+problems on various OSes.  Features:
 
- * all needed packages
- * all needed OS configuration
+ * most/all of the open source OSes currently in the PostgreSQL build farm
+ * all needed packages installed
+ * all needed OS configuration (sysctls etc) done
  * PostgreSQL source tree cloned
- * configured, compiled, installed, ccache is prewarmed
+ * maximum number of options configured
+ * compiled, installed, so ready to run and ccache is prewarmed
 
-Status:
+These operating systems are currently supported:
 
-debian11:    all options, 64 bit and 32 bit
-freebsd12:   all options
-netbsd9:     all options
-openbsd6:    all options except gssapi, llvm, nls
-openindiana: all options except llvm
+debian11:      all options, 64 bit and 32 bit
+freebsd12:     all options
+netbsd8:       all options
+netbsd9:       all options
+openbsd6:      all options except gssapi, llvm
+openindiana:   all options except llvm
 
 TODO:  Install civilised stuff like .vimrc, .screenrc
 TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
