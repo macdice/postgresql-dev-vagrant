@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/netbsd8"
+
+  config.nfs.verify_installed = false
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.ssh.forward_agent = true
+
+  # install the packages we need and configure the crusty old sysv semaphores
+  config.vm.provision "shell", inline: <<-SHELL
+    pkgin -y install gmake git flex bison ccache readline screen mozilla-rootcerts p5-IPC-Run llvm clang pkg-config icu lz4 libxslt tcl htop
+    mozilla-rootcerts install
+    echo 'kern.ipc.semmni=100' >> /etc/sysctl.conf
+    echo 'kern.ipc.semmns=256' >> /etc/sysctl.conf
+    sysctl -w kern.ipc.semmni=100
+    sysctl -w kern.ipc.semmns=256
+  SHELL
+
+  # things to run as vagrant user
+  $setup_tree = <<-SHELL
+    # pull down the source tree
+    git clone https://github.com/postgres/postgres.git
+
+    # set up lazy scripts so I don't have to remember the options
+    cd postgres
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-gssapi --with-icu --with-tcl --with-perl --with-python --with-pam --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-llvm --with-includes=/usr/pkg/include CC="ccache cc" CXX="ccache c++" CLANG="ccache clang" LLVM_CONFIG="llvm-config" PYTHON="python3.7" LDFLAGS="-R/usr/pkg/lib"' > reconfigure.sh
+    echo 'gmake -s clean && gmake -s -j4 && gmake -s install' > rebuild.sh
+    chmod +x reconfigure.sh rebuild.sh
+
+    # warm up ccache by building and installing (it's not a provisioning
+    # failure if this step fails, though)
+    ./reconfigure.sh && ./rebuild.sh && gmake -s check || true
+  SHELL
+  config.vm.provision "shell", inline: $setup_tree, privileged: false
+
+  config.vm.provider :libvirt do |domain|
+    domain.memory = 4096
+    domain.cpus = 4
+  end
+end
+
