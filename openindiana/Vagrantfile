@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
     #   --with-llvm gets some way if you install "clang90" above, but fails
     #     with: ld: fatal: file /usr/clang/9.0/lib/libLLVM-9.so: wrong ELF
     #           class: ELFCLASS64
-    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-pam --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-includes="/usr/include/openldap" CC="ccache gcc" CXX="ccache clang++" CLANG="ccache clang"' > reconfigure.sh
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-pam --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-includes="/usr/include/openldap" CC="ccache gcc"' > reconfigure.sh
     echo 'gmake -s clean && gmake -s -j4 && gmake -s install && gmake -s check' > rebuild.sh
     chmod +x reconfigure.sh rebuild.sh
 
