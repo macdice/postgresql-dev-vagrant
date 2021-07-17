@@ -14,10 +14,6 @@ netbsd9:     all options except gssapi
 openbsd6:    all options except gssapi, llvm, nls
 openindiana: all options except gssapi, llvm
 
-TODO:  Figure out which libraries to install for gssapi...
 TODO:  Install civilised stuff like .vimrc, .screenrc
-TODO:  Figure out how to set the git user/email without hardcoding it here
-TODO:  Add a whole bunch more options (llvm, ssl, ...)
 TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
 TODO:  Find some more OSes.
-TODO:  Can this thing manage qemu-based emulation of ARM, POWER, RISC-V etc?
