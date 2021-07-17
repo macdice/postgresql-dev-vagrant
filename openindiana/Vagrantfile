@@ -19,7 +19,9 @@ Vagrant.configure("2") do |config|
     # having a hand-compiled libldap that is in the library search patch
     # before the system library path, but I'm trying to use the packages
     # here...)
+    rm -f /usr/lib/libldap.so
     ln -s libldap-2.4.so /usr/lib/libldap.so
+    rm -f /usr/lib/amd64/libldap.so
     ln -s libldap-2.4.so /usr/lib/amd64/libldap.so
   SHELL
 
