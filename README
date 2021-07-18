@@ -1,5 +1,5 @@
 A lazy way to spin up virtual machines to investigate PostgreSQL portability
-problems on various OSes.  Features:
+problems on various OSes.  Goals:
 
  * most/all of the open source OSes currently in the PostgreSQL build farm
  * all needed packages installed
@@ -19,4 +19,6 @@ openindiana:   all options except llvm
 
 TODO:  Install civilised stuff like .vimrc, .screenrc
 TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
+TODO:  Put in some reasonable settings for VirtualBox and other providers too
 TODO:  Find some more OSes.
+TODO:  dragonflybsd5 nearly works but hangs at startup
