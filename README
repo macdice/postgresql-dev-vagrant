@@ -14,7 +14,7 @@ debian11:      all options, 64 bit and 32 bit
 freebsd12:     all options
 netbsd8:       all options
 netbsd9:       all options
-openbsd6:      all options except gssapi
+openbsd6:      all options except llvm, gssapi
 openindiana:   all options except llvm
 
 TODO:  Install civilised stuff like .vimrc, .screenrc

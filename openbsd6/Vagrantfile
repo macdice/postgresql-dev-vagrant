@@ -22,10 +22,12 @@ Vagrant.configure("2") do |config|
     # Notes:
     #   --with-bsd-auth replaces --with-pam on OpenBSD
     #   --with-gssapi not used yet (which package is needed for this?!)
-    #   --with-llvm requires llvm package even though there are parts of
-    #     LLVM in the base system; not enough parts
+    #   --with-llvm doesn't work with the base syste (missing components)
+    #   --with-llvm with the port installed fails at runtime with "failed
+    #     to resolve name __llvm_retpoline_r" and "__retguard_1246" etc :-(
     cd postgres
-    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-bsd-auth --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-llvm CC="ccache cc" CXX="ccache c++" CLANG="ccache /usr/local/bin/clang" LLVM_CONFIG="/usr/local/bin/llvm-config"' > reconfigure.sh
+    #echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-bsd-auth --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-llvm CC="ccache cc" CXX="ccache c++" CLANG="ccache /usr/local/bin/clang" LLVM_CONFIG="/usr/local/bin/llvm-config"' > reconfigure.sh
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-bsd-auth --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl CC="ccache cc"' > reconfigure.sh
     echo 'gmake -s clean && gmake -s -j4 && gmake -s install' > rebuild.sh
     chmod +x reconfigure.sh rebuild.sh
 
