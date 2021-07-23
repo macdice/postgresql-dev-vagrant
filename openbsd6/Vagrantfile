@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
   config.vm.provision "shell", inline: <<-SHELL
-    pkg_add -z ccache gmake git bison autoconf-2.69 readline screen-- p5-IPC-Run icu4c python3 libxml libxslt openldap-client--gssapi tcl-8.6.8 gettext-tools
+    pkg_add -z ccache gmake git bison autoconf-2.69 readline screen-- p5-IPC-Run icu4c python3 libxml libxslt openldap-client--gssapi tcl-8.6.8 gettext-tools llvm
   SHELL
 
   # things to run as vagrant user
@@ -22,12 +22,10 @@ Vagrant.configure("2") do |config|
     # Notes:
     #   --with-bsd-auth replaces --with-pam on OpenBSD
     #   --with-gssapi not used yet (which package is needed for this?!)
-    #   --with-llvm *almost* works without extra packages because llvm is
-    #     in the base system, but fails due to lack of llvm-tlo;
-    #     to experiment with this, also add CLANG="ccache clang" and
-    #     CXX="ccache c++" because otherwise a too-old g++ is selected
+    #   --with-llvm requires llvm package even though there are parts of
+    #     LLVM in the base system; not enough parts
     cd postgres
-    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-bsd-auth --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl CC="ccache cc"' > reconfigure.sh
+    echo './configure --prefix=$HOME/install --enable-cassert --enable-debug --enable-tap-tests --enable-nls --with-icu --with-tcl --with-perl --with-python --with-bsd-auth --with-ldap --with-libxml --with-libxslt --with-lz4 --with-openssl --with-llvm CC="ccache cc" CXX="ccache c++" CLANG="ccache /usr/local/bin/clang" LLVM_CONFIG="/usr/local/bin/llvm-config"' > reconfigure.sh
     echo 'gmake -s clean && gmake -s -j4 && gmake -s install' > rebuild.sh
     chmod +x reconfigure.sh rebuild.sh
 
