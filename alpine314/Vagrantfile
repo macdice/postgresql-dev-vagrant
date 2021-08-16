@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/alpine314"
+
+  config.vm.provider :libvirt do |domain|
+    domain.memory = 4096
+    domain.cpus = 4
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apk add build-base git ccache readline-dev zlib-dev flex bison perl linux-headers screen htop strace gdb
+  SHELL
+
+  $setup_tree = <<-SHELL
+    git clone https://github.com/postgres/postgres.git
+    cd postgres
+    echo './configure --prefix=$HOME/install CC="ccache cc"' > reconfigure.sh
+    echo 'make -s clean && make -s -j4 && make -s install' > rebuild.sh
+    chmod +x reconfigure.sh rebuild.sh
+    ./reconfigure.sh && ./rebuild.sh && make -s check || true
+  SHELL
+  config.vm.provision "shell", inline: $setup_tree, privileged: false
+end
+
