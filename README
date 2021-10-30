@@ -10,6 +10,7 @@ problems on various OSes.  Goals:
 
 These operating systems are currently supported:
 
+alpine314:     only basic options, needs more packages
 debian11:      all options, 64 bit and 32 bit
 dragonfly6:    all options
 freebsd13:     all options
