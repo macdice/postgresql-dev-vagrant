@@ -11,6 +11,8 @@ problems on various OSes.  Goals:
 These operating systems are currently supported:
 
 debian11:      all options, 64 bit and 32 bit
+dragonfly6:    all options
+freebsd13:     all options
 freebsd12:     all options
 netbsd8:       all options
 netbsd9:       all options
@@ -21,4 +23,3 @@ TODO:  Install civilised stuff like .vimrc, .screenrc
 TODO:  Figure out how to move the number of CPUs and RAM size somewhere better.
 TODO:  Put in some reasonable settings for VirtualBox and other providers too
 TODO:  Find some more OSes.
-TODO:  dragonflybsd5 nearly works but hangs at startup
