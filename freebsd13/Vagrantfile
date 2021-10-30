@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
   config.vm.provision "shell", inline: <<-SHELL
-    pkg install -y gmake ccache git flex bison readline p5-IPC-Run llvm pkgconf python3 libxslt openldap25-client gettext tcl86 krb5 screen htop
+    pkg install -y gmake ccache git flex bison readline p5-IPC-Run llvm pkgconf python3 libxslt openldap25-client gettext tcl86 krb5 screen htop icu liblz4
   SHELL
 
   # things to run as vagrant user
